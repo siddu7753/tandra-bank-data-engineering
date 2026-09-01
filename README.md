@@ -60,7 +60,9 @@ The objective of this project is to build an incremental and automated data pipe
 
 
 
-\## High-Level Architecture
+## High-Level Architecture
+
+![Tandra Bank Data Engineering Architecture](architecture.png)
 
 
 
@@ -132,7 +134,7 @@ Amazon Athena
 
 
 
-\## Core Technologies
+## Core Technologies
 
 
 
