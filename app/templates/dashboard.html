@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tandra Bank</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Tandra Bank</h1>
+
+    <h2>Welcome, {{ customer_name }}</h2>
+
+    {% if message %}
+        <div class="success">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <h2>Your Accounts</h2>
+
+    {% for account in accounts %}
+        <div class="account-card">
+            <h3>{{ account[2] }}</h3>
+            <p>Account: {{ account[4] }}</p>
+            <div class="balance">${{ account[3] }}</div>
+        </div>
+    {% endfor %}
+
+    <h2>Transfer Money</h2>
+
+    <form method="POST" action="/transfer">
+
+        <input type="hidden" name="customer_id" value="{{ customer_id }}">
+
+        <label>From Account</label><br>
+        <select name="from_account">
+            {% for account in accounts %}
+                <option value="{{ account[4] }}">
+                    {{ account[2] }} - {{ account[4] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br>
+
+        <label>To Account</label><br>
+        <select name="to_account">
+            {% for account in accounts %}
+                <option value="{{ account[4] }}">
+                    {{ account[2] }} - {{ account[4] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br>
+
+        <label>Amount</label><br>
+        <input
+            type="number"
+            name="amount"
+            step="0.01"
+            min="0.01"
+            required
+        >
+
+        <br>
+
+        <button type="submit">Transfer</button>
+
+    </form>
+   <h2>Add Daily Expense</h2>
+
+<form method="POST" action="/expense">
+
+    <input type="hidden" name="customer_id" value="{{ customer_id }}">
+
+    <label>Merchant</label><br>
+    <input
+        type="text"
+        name="merchant"
+        placeholder="Example: Chipotle"
+        required
+    >
+
+    <br>
+
+    <label>Amount</label><br>
+    <input
+        type="number"
+        name="amount"
+        step="0.01"
+        min="0.01"
+        required
+    >
+
+    <br>
+
+    <label>Category</label><br>
+    <select name="category">
+        <option value="FOOD">Food</option>
+        <option value="GROCERIES">Groceries</option>
+        <option value="GAS">Gas</option>
+        <option value="SHOPPING">Shopping</option>
+        <option value="BILLS">Bills</option>
+        <option value="TRAVEL">Travel</option>
+        <option value="OTHER">Other</option>
+    </select>
+
+    <br>
+
+    <label>Expense Date</label><br>
+    <input
+        type="date"
+        name="expense_date"
+        required
+    >
+
+    <br>
+
+    <button type="submit">Add Expense</button>
+
+</form>
+    <h2>Recent Expenses</h2>
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Merchant</th>
+        <th>Category</th>
+        <th>Amount</th>
+    </tr>
+
+    {% for expense in expenses %}
+    <tr>
+        <td>{{ expense[3] }}</td>
+        <td>{{ expense[0] }}</td>
+        <td>{{ expense[2] }}</td>
+        <td>${{ expense[1] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <h2>Recent Transactions</h2>
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Account</th>
+            <th>Merchant</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+        </tr>
+
+        {% for transaction in transactions %}
+        <tr>
+            <td>{{ transaction[4] }}</td>
+            <td>{{ transaction[5] }}</td>
+            <td>{{ transaction[0] }}</td>
+            <td>{{ transaction[2] }}</td>
+            <td>${{ transaction[1] }}</td>
+            <td>{{ transaction[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+</body>
+
+</html>

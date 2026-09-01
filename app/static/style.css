@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 85%;
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.account-card {
+    display: inline-block;
+    width: 220px;
+    padding: 20px;
+    margin: 10px 15px 20px 0;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.account-card h3 {
+    margin-top: 0;
+}
+
+.balance {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+form {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+input,
+select {
+    padding: 10px;
+    margin: 6px 0 14px 0;
+    width: 100%;
+    max-width: 350px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.success {
+    padding: 12px;
+    background: #eaf7ea;
+    border: 1px solid #b8dfb8;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.error {
+    padding: 12px;
+    background: #fdeaea;
+    border: 1px solid #e0b4b4;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th,
+td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #f3f4f6;
+}
+
+.login-box {
+    max-width: 400px;
+    margin: 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
