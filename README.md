@@ -660,3 +660,152 @@ In this situation it does not:
 
 This reduces unnecessary processing and cloud activity.
 
+---
+
+## Phase 2 — AWS Event-Driven Transaction Processing and Data Quality
+
+In addition to the original PostgreSQL-based incremental pipeline, Tandra Bank includes a separate AWS implementation developed through 30 hands-on data engineering labs.
+
+This implementation focuses on event-driven CSV ingestion, partitioned data storage, PySpark transformations, historical duplicate detection, quarantine processing, and Athena validation.
+
+### Phase 2 Architecture
+
+```text
+Transaction CSV Upload
+         |
+         v
+Amazon S3 (incoming/transactions/)
+         |
+         v
+S3 Event Notification
+         |
+         v
+Amazon SQS
+         |
+         v
+AWS Lambda (CSV validation and partitioning)
+         |
+         v
+Amazon S3 (raw/transactions/year=YYYY/month=MM/day=DD/)
+         |
+         v
+AWS Glue Data Catalog
+         |
+         v
+AWS Glue PySpark ETL
+         |
+         +-------------------------+
+         |                         |
+         v                         v
+Processed Parquet          Quarantine Parquet
+         |                         |
+         +------------+------------+
+                      |
+                      v
+                 Amazon Athena
+```
+
+The diagram represents the Phase 2 processing architecture. The historical conflict test was executed using a test CSV and existing processed Parquet data. A fully automated end-to-end Glue orchestration workflow has not been verified.
+
+### AWS Lambda Transaction Processor
+
+The Lambda function receives S3 event notifications through Amazon SQS.
+
+Its responsibilities include:
+
+- Reading the exact S3 object version associated with the event, when available.
+- Parsing incoming transaction CSV files.
+- Checking required transaction dates and amounts.
+- Validating transaction dates.
+- Grouping records by business date.
+- Creating Hive-style S3 partitions.
+- Generating deterministic output filenames based on source identity.
+- Rejecting invalid input batches.
+
+Source code: [AWS Lambda transaction processor](aws/lambda/transaction_processor.py)
+
+### AWS Glue Data Processing
+
+The Glue implementation uses PySpark to process transaction records.
+
+Processing capabilities include:
+
+- Schema standardization and type conversion.
+- Required-field validation.
+- Transaction business-rule checks.
+- Within-batch duplicate and conflict detection.
+- Historical transaction comparison.
+- Incremental identification of new transactions.
+- Quarantine handling for invalid and conflicting records.
+- Record-count reconciliation.
+
+The repository contains both the reconstructed main Glue pipeline and the historical conflict test implementation.
+
+The reconstructed main pipeline has passed Python syntax validation but has not yet been independently verified through an AWS Glue execution.
+
+Source code:
+
+- [Main Glue transaction pipeline](aws/glue/lab30_transaction_pipeline.py)
+- [Historical conflict test](aws/glue/lab30_historical_conflict_test.py)
+
+### Historical Conflict Detection
+
+A historical conflict occurs when an incoming transaction uses an existing transaction ID but contains different business values.
+
+The Lab 30 test used transaction `TXN30002`.
+
+| Field | Historical Transaction | Incoming Transaction |
+|---|---|---|
+| Transaction ID | TXN30002 | TXN30002 |
+| Account ID | 1002 | 1002 |
+| Amount | $500.00 | $750.00 |
+| Merchant | Payroll | Payroll |
+
+The tested Glue job preserved the original $500.00 transaction and quarantined the conflicting $750.00 transaction.
+
+Athena confirmed the rejection reason:
+
+`HISTORICAL_TRANSACTION_CONFLICT`
+
+### Verified Lab 30 Results
+
+| Validation Metric | Result |
+|---|---:|
+| Processed transaction records | 3 |
+| Unique processed transactions | 3 |
+| Total processed transaction amount | $700.75 |
+| Historical conflicts detected in test | 1 |
+| Quarantined historical conflicts | 1 |
+| Reconciliation checks | 5 passed |
+
+The historical conflict test was successfully executed in AWS Glue, and its results were verified through Amazon Athena.
+
+### AWS Storage Layout
+
+The AWS labs use the S3 bucket `tandra-bank-data-siddu-2026` in `us-east-2`.
+
+Key prefixes include:
+
+```text
+incoming/transactions/
+raw/transactions/year=YYYY/month=MM/day=DD/
+lab30/processed/transactions/
+lab30/quarantine/transactions/
+lab30/test-input/
+```
+
+### Documentation and SQL
+
+- [AWS Architecture Documentation](docs/aws-architecture.md)
+- [Lab 30 Validation Report](docs/lab30-validation.md)
+- [Athena Validation Queries](aws/sql/lab30_validation.sql)
+
+### Implementation Notes
+
+The Phase 1 and Phase 2 pipelines use different incremental processing approaches and should not be interpreted as one fully integrated deployment.
+
+This repository documents hands-on learning and validated lab scenarios. It does not claim production-ready exactly-once processing, complete retry safety, or automated orchestration across every component.
+
+Future improvements include automated deployment, stronger idempotency, unit and integration tests, monitoring, and infrastructure as code.
+
+
