@@ -670,6 +670,9 @@ This implementation focuses on event-driven CSV ingestion, partitioned data stor
 
 ### Phase 2 Architecture
 
+
+**[View the Phase 2 AWS Architecture Diagram](docs/aws-phase2-architecture.md)**
+
 ```text
 Transaction CSV Upload
          |
