@@ -8,29 +8,55 @@
 
 flowchart TD
 
-&#x20;   A\["Transaction CSV Upload"] --> B\["Amazon S3: Incoming Zone"]
+&#x20;   A\["Transaction CSV Upload"]
 
-&#x20;   B --> C\["S3 Event Notification"]
+&#x20;   B\["Amazon S3 - Incoming Zone"]
 
-&#x20;   C --> D\["Amazon SQS"]
+&#x20;   C\["S3 Event Notification"]
 
-&#x20;   D --> E\["AWS Lambda: Validate and Partition"]
+&#x20;   D\["Amazon SQS"]
 
-&#x20;   E --> F\["Amazon S3: Raw Zone"]
+&#x20;   E\["AWS Lambda - Validate and Partition"]
 
-&#x20;   F --> G\["AWS Glue Data Catalog"]
+&#x20;   F\["Amazon S3 - Raw Zone"]
 
-&#x20;   G --> H\["AWS Glue PySpark ETL"]
+&#x20;   G\["AWS Glue Data Catalog"]
 
-&#x20;   H --> I\["Processed Parquet"]
+&#x20;   H\["AWS Glue PySpark ETL"]
 
-&#x20;   H --> J\["Quarantine Parquet"]
+&#x20;   I\["Processed Parquet"]
 
-&#x20;   I --> K\["Amazon Athena"]
+&#x20;   J\["Quarantine Parquet"]
+
+&#x20;   K\["Amazon Athena"]
+
+&#x20;   L\["SQL Validation and Reconciliation"]
+
+
+
+&#x20;   A --> B
+
+&#x20;   B --> C
+
+&#x20;   C --> D
+
+&#x20;   D --> E
+
+&#x20;   E --> F
+
+&#x20;   F --> G
+
+&#x20;   G --> H
+
+&#x20;   H --> I
+
+&#x20;   H --> J
+
+&#x20;   I --> K
 
 &#x20;   J --> K
 
-&#x20;   K --> L\["SQL Validation and Reconciliation"]
+&#x20;   K --> L
 
 ```
 
@@ -44,9 +70,9 @@ flowchart TD
 
 \- The Glue historical conflict test was executed using a test CSV and existing processed Parquet data.
 
-\- The main Glue pipeline script was reconstructed and syntax-checked, but has not been independently executed in AWS Glue.
+\- The main Glue pipeline script was reconstructed and syntax-checked but has not been independently executed in AWS Glue.
 
-\- The diagram illustrates the intended overall flow, not a verified fully automated end-to-end deployment.
+\- The diagram represents the intended overall architecture, not a verified fully automated end-to-end deployment.
 
 
 
